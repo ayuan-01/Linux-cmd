@@ -460,5 +460,189 @@ find / -name "*.so" 2>/dev/null
 -not      not 非操作
 ```
 
+# vim
 
+1. 设置显示行号
+
+   ```sh
+   # 显示绝对行号
+   :set number/nu
+   # 显示相对行号（其他行相对于当前行的距离）
+   :set relativenumber/rnu
+   # 显示混合行号（当前行显示绝对行号，其他行显示相对行号）
+   :set number relativenumber
+   # 隐藏行号
+   :set nomunber 
+   # 隐藏相对行号
+   :set norun
+   
+   # 设置每次打开vim都显示行号
+   vim ~/.vimrc
+   set number
+   ```
+
+2. 设置缩进
+
+   ```sh
+   set tabstop=4     " 屏幕上 Tab 显示的宽度
+   set shiftwidth=4  " 自动缩进和手动缩进时的宽度
+   set expandtab     " 将 Tab 自动转换为空格
+   set autoindent    " 新行自动保持与上一行相同的缩进
+   "set smartindent  " 在某些情况下提供更智能的自动缩进（可选）
+   ```
+
+3. 撤销和返回撤销
+
+   ```sh
+   u ctrl+r
+   ```
+
+4. 替换
+
+   ```sh
+   :%s/foo/bar/g	# 全文替换
+   :%s/foo/bar/gc	# 全文替换，但每次替换需要确认
+   :5,15s/foo/bar/g # 指定区间替换
+   ```
+
+5. 文件保存
+
+   ```sh
+   :saveas {路径}
+   :e {文件名}		# 打开另一个文件
+   ```
+
+6. 分屏
+
+   ```sh
+   :vsp
+   ctrl+w w	# 切换窗口
+   vtrl+w q	# 关闭当前窗口
+   ```
+
+7. 移动
+
+   ```sh
+   hjkl # 左下上右
+   wbe		# 移动到下一个单词的开头/上一个单词的开头/末尾
+   0^$		# 行首/第一个非空白字符/行尾
+   gg/G	# 文首/文末
+   :n		# 指定行
+   *#		# 高亮并跳转到上一个/下一个与当前单词相同的词
+   ```
+
+8. 插入
+
+   ```sh
+   i	# 在光标前插入
+   a	# 在光标后插入 (Append)
+   I	# 在行首插入
+   A	# 在行尾插入
+   o	# 在当前行下方新建一行并插入
+   O	# 在当前行上方新建一行并插入
+   ```
+
+6. 删除
+
+   ```sh
+   dw	# 删除一个单词 (从光标到词尾)
+   dd	# 删除整行 (剪切)
+   D	# 删除从光标到行尾的内容
+   ```
+
+7. 复制粘贴
+
+   ```sh
+   yy	# 复制当前行 (Yank)
+   yw	# 复制一个单词
+   y$	# 复制到行尾
+   p	# 在光标后粘贴
+   P	# 在光标前粘贴
+   ```
+
+8. 大小写切换
+
+   ```sh
+   ~	# 切换光标下字符的大小写
+   ```
+
+   
+
+# GDB调试器
+
+## 基础命令
+
+以一段C语言代码来演示GDB的使用
+
+```c
+#include <stdio.h>
+
+int main() {
+        int a = 5;
+        int b = 0;
+   		printf("c = %d\n", c);
+        int c = a / b; // 故意制造错误
+        printf("c = %d\n", c);
+
+        return 0;
+}
+```
+
+1. 编译该段代码，-g选项增加调试信息
+
+```sh
+gcc -g test.c -o test
+```
+
+2. 打卡gdb调试器
+
+```sh
+gdb test
+```
+
+3. 打断点
+
+```sh
+# 指定文件:行号
+b /home/book/gdb_study/test.c:6
+
+# 函数名
+b main	# 在main函数入口处设置断点
+
+# 如果只有一个文件，可以直接在某行设置断点
+break 6
+
+# 查看断点
+info breakpoints
+
+# 删除断点
+delete 1
+```
+
+4. 单步执行
+
+```sh
+n # 不进入函数内部 next
+s # 进入函数内部	 step
+```
+
+5. 查看变量值
+
+```sh
+p a
+```
+
+6. 退出
+
+```sh
+q
+```
+
+## 进阶命令
+
+1. 条件断点
+
+```sh
+break 11 if x == 3  # 只有x==3时，才会在11行设置断点
+```
 
