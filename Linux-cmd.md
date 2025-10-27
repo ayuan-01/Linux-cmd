@@ -1,3 +1,76 @@
+# 什么是镜像网站
+
+顾名思义，镜像站就是原始网站的镜像或者副本，它是一个与原始网站内容完全相同的网站，托管在不同的服务器上，通常位于不同的地理位置。镜像站会定期与主站或者上游站同步，力求内容保持一致。每个镜像站都有自己独立的网址和服务器硬件。
+
+国内镜像站主要解决的是主站访问缓慢的问题。Ubuntu下载常用的镜像站：
+
+```
+ 阿里云镜像：https://developer.aliyun.com/mirror/
+ 腾讯云镜像：https://mirrors.cloud.tencent.com/
+ 华为云镜像：https://mirrors.huaweicloud.com/
+ 清华云镜像：https://mirrors.tuna.tsinghua.edu.cn/
+ 中科大镜像：https://mirrors.ustc.edu.cn/
+```
+
+当在国内配置Linux系统的软件源时，可以挑选一个像阿里云或者清华的镜像源。
+
+查看当前Ubuntu系统的源：
+
+```sh
+apt policy
+apt-cache policy
+```
+
+在换源之前需要创建之前源的备份，以防出错后无法改回。
+
+```sh
+sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak
+```
+
+使用sed命令进行文本替换。
+
+```sh
+sudo sed -i 's/cn.archive.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list
+sudo sed -i 's/security.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list
+```
+
+# 虚拟机镜像安装之后需要安装的一些应用
+
+```txt
+C/C++开发工具：build-essential
+	这个工具包含gcc，g++，makefile，必要的头文件和库libc6-dev等。
+查看编译器版本的命令：gcc -version
+
+tree, vim
+
+sudo apt-get install build-essential uuid-dev iasl git gcc-5 nasm python3-distutils
+uuid-dev：是 UUID 开发库，它提供了生成和解析 UUID（通用唯一识别码）所需的头文件和静态库。
+iasl：是 ACPI Source Language Compiler（ACPI 源语言编译器），它是 ACPI 组件架构 的核心工具之一。
+nasm：是一个开源的 x86/x86-64 汇编器。主要作用有，汇编：将人类可读的汇编代码（.asm）编译成机器代码（目标文件）。交叉编译：支持多种输出格式，可用于不同平台。宏处理：提供强大的宏功能，简化汇编编程。
+python3-distutils：是 Python Distribution Utilities 的缩写，它是 Python 标准库的一部分，用于构建、打包和分发 Python 模块和扩展。
+```
+
+# 虚拟机的网络代理设置
+
+Ubuntu在使用图形化界面设置了网络代理之后，可以在图形化界面的软件中使用代理，比如软件商店，浏览器等，但是无法在终端中使用，所以要想在终端中使用代理，比如使用git clone命令，需要另外设置。
+
+首先介绍一下图形化界面使用主机代理的方法：
+
+首先在Windows上通过ipconfig命令获取VMnet8的IP地址(如：192.168.10.1)。然后从clash中查看端口号：7890。随后即可按照如下步骤设置：Ubuntu->设置->网络->网络代理->手动->将所有的代理和端口号修改为192.168.10.1:7890。
+
+在终端中使用代理的方法：
+
+```sh
+# 临时使用
+export http_proxy="http://192.168.10.1:7890"
+export https_proxy="http://192.168.10.1:7890"
+
+# 永久配置
+echo 'export http_proxy="http://192.168.10.1:7890"' >> ~/.bashrc
+echo 'export https_proxy="http://192.168.10.1:7890"' >> ~/.bashrc
+export no_proxy="localhost,127.0.0.1,::1"
+```
+
 # 文本处理命令
 
 ## sed
@@ -46,7 +119,7 @@
    sed '2a\This is an added line' file.txt
    ```
 
-6. **替换匹配范围**（多行操作） 你可以指定多个行的范围来进行操作，例如替换从第2行到第5行的某个字符串：
+6. **替换匹配范围**（多行操作）你可以指定多个行的范围来进行操作，例如替换从第2行到第5行的某个字符串：
 
    ```
    sed '2,5s/old_text/new_text/' file.txt
@@ -566,7 +639,32 @@ find / -name "*.so" 2>/dev/null
    ~	# 切换光标下字符的大小写
    ```
 
-   
+
+# Linux的下载命令
+
+```sh
+sudo apt update
+sudo apt install packet-name
+sudo apt reinstall package_name
+sudo apt remove package_name		# 卸载（保留配置文件）
+sudo apt purge package_name			# 卸载（完全卸载）
+sudo apt upgrade					# 更新已经安装的软件包
+
+# 直接安装本地.deb文件
+sudo dpkg -i package_file.deb
+sudo apt install -f			# 如果安装过程中有依赖问题，运行
+sudo dpkg -r package_name	# 卸载 .deb 包
+dpkg -l						# 列出已安装的 .deb 包
+dpkg -l | grep package_name	# 查看特定包是否安装
+```
+
+# ssh
+
+使用Linux进行开发的使用很常用的场景是使用shell连接远程服务器，此时需要给我们的Ubuntu系统安装ssh。
+
+```sh
+sudo apt install -y ssh
+```
 
 # GDB调试器
 
